@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>Page Title</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css"
+      integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+      crossorigin="anonymous"
+    />
+  </head>
+  <body style="text-align:center">
+    <h1 style="margin-bottom: 55px;">文件上传并解析功能</h1>
+    <form class="form-horizontal" enctype="multipart/form-data">
+      <div class="form-group">
+        <input type="file" id="inputfile" style="display:none"/>
+        <input type="text" value="" id="filename" >
+        <a class="btn" onclick="$('input[id=inputfile]').click()">Browse</a>
+        <a class="btn" onclick="upload()">上传</a>
+      </div>
+    </form>
+    <table class="table">
+      <thead>
+        <th>用户名</th>
+        <th>密码</th>
+        <th>描述</th>
+      </thead>
+      <tbody id="tbody"></tbody>
+    </table>
+    <script
+  src="https://code.jquery.com/jquery-3.3.1.min.js"
+  integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+  crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.14.0/xlsx.js"></script>
+    <!--
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    -->
+    <script>
+        $('input[id=inputfile]').change(()=>{
+            $('#filename').val($('input[id=inputfile]').val())
+        })
+        let result = []
+        function upload() {
+            let file = $('input[id=inputfile]')[0].files[0]
+            // TODO 验证文件格式
+            let reader = new FileReader()
+            reader.readAsBinaryString(file)
+            reader.onload =  function (e) {
+                // console.log(e)
+                let data = e.target.result;
+                // console.log(data)
+                let binary = XLSX.read(data, {
+                    type: "binary"
+                })
+                // console.log(binary)
+                result =  XLSX.utils.sheet_to_json(binary.Sheets[binary.SheetNames[0]])
+                console.log(result)
+                
+                let tbody = $("#tbody")
+                for (let i=0;i<result.length;i++){
+                  let html = "<tr><td>"+result[i].name+"</td><td>"+result[i].password+"</td><td>"+result[i].des+"</td></tr>"
+                  tbody.append(html)
+                }
+            }
+        }
+    </script>
+  </body>
+</html>

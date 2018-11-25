@@ -3,6 +3,8 @@ package com.springboot.study.Dao.impl;
 import com.springboot.study.Dao.IUserDao;
 import com.springboot.study.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.jdbc.core.JdbcTemplate;
 
@@ -19,16 +21,10 @@ public class UserDao implements IUserDao {
 
     @Override
     public List<User> findAllUser(){
-        System.out.println("-----Dao");
 
-        List<Map<String, Object>> list = jdbc.queryForList("select * from user");
+        RowMapper<User> mapper = new BeanPropertyRowMapper<>(User.class);
 
-        System.out.println(list);
-        for (int i=0;i<list.size();i++) {
-            System.out.println("-------peer" + list.get(i));
-        }
 
-        List<User> user = new ArrayList();
-        return user;
+        return jdbc.query("select * from user",mapper);
     }
 }
